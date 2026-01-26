@@ -124,6 +124,7 @@ export default function Dashboard() {
                 .rpc();
 
             // --- Step 2: Grant Access (Allow) on Inco Network ---
+            // @ts-ignore
             const shareAccount = await program.account.shareSession.fetch(sharePDA);
             // @ts-ignore
             const handleObj = shareAccount.sessionAadhar;
