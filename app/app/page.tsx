@@ -52,7 +52,7 @@ export default function Home() {
 
           <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
             Store personal documents securely with client-side encryption.
-            Share only what matters using verifiable proofs—without ever revealing the raw file.
+            Share only what matters using verifiable proofs - without ever revealing the raw file.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">

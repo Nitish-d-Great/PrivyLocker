@@ -91,7 +91,7 @@ export default function Dashboard() {
     const createShare = async (doc: DocData) => {
         if (!wallet) return;
 
-        const AUTHORIZED_VERIFIER = "AMowwS1iaoKZMMwJxWY5jdeCKukbm64XyZEg8fwbXCPw";
+        const AUTHORIZED_VERIFIER = "91B1JkkWTN3r2y5RYY3Cugq6ZGLoonLLT8JYytbu5dp7";
 
         const verifierPubkey = prompt("Enter Verifier Public Key:");
         if (!verifierPubkey) return;
