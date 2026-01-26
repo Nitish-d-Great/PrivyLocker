@@ -3,7 +3,7 @@
 import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { BN } from "@coral-xyz/anchor";
 import { useEffect, useState } from "react";
-import { Plus, Loader2, FileText, Share2, Trash2 } from "lucide-react";
+import { Plus, Loader2, FileText, Share2, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { getProgram, getUserProfilePDA, getDocumentPDA, PROGRAM_ID } from "../../utils/anchor";
 import { PublicKey, SystemProgram, TransactionInstruction, Transaction } from "@solana/web3.js";
@@ -24,6 +24,7 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [documents, setDocuments] = useState<DocData[]>([]);
     const [initStatus, setInitStatus] = useState("Checking wallet...");
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useEffect(() => {
         if (!connected || !wallet) {
@@ -210,9 +211,24 @@ export default function Dashboard() {
                         <div className="absolute top-4 right-4 text-slate-500 hover:text-white cursor-pointer" title="Create Share Link" onClick={() => createShare(doc)}>
                             <Share2 className="w-5 h-5" />
                         </div>
-                        <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 text-blue-400 group-hover:scale-110 transition-transform">
+                        <div
+                            className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 text-blue-400 group-hover:scale-110 transition-transform cursor-pointer"
+                            onClick={() => setSelectedImage(`http://localhost:3001/api/fetch/${doc.encryptedBlobUri}`)}
+                        >
                             <FileText className="w-6 h-6" />
                         </div>
+
+                        {/* Image Preview (Demo) */}
+                        <div className="w-full h-32 bg-slate-800 rounded-lg mb-4 overflow-hidden border border-white/5">
+                            <img
+                                src={`http://localhost:3001/api/fetch/${doc.encryptedBlobUri}`}
+                                alt="Preview"
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                onClick={() => setSelectedImage(`http://localhost:3001/api/fetch/${doc.encryptedBlobUri}`)}
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            />
+                        </div>
+
                         <h3 className="text-lg font-semibold mb-1">{doc.description}</h3>
                         <p className="text-xs text-slate-500 mb-4 whitespace-nowrap overflow-hidden text-ellipsis" title={doc.fingerprint}>
                             Hash: {doc.fingerprint}
@@ -242,6 +258,31 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
+
+            {/* Image Modal */}
+            {selectedImage && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <div
+                        className="relative max-w-5xl w-full max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setSelectedImage(null)}
+                            className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-10"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+                        <img
+                            src={selectedImage}
+                            alt="Full Preview"
+                            className="w-full h-full object-contain max-h-[85vh]"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

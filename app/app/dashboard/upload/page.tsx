@@ -32,21 +32,18 @@ export default function UploadPage() {
         setStatusMsg("Initializing...");
 
         try {
-            // 1. Generate Key & Encrypt
-            setStatusMsg("Encrypting file and data...");
+            // 1. Skip Encryption for Demo (Upload Raw File)
+            setStatusMsg("Preparing file...");
+            // const encryptedAadharHex = await encryptValue(BigInt(aadhar)); // Keep Aadhar encryption if needed, but for file we skip
 
-            // Inco Encryption
+            // Inco Encryption for Aadhar (Keep this!)
             const encryptedAadharHex = await encryptValue(BigInt(aadhar));
             const encryptedAadharBytes = Buffer.from(encryptedAadharHex, 'hex');
 
-            const key = await generateKey();
-            const { encryptedBlob } = await encryptFile(file, key);
-            // const keyString = await exportKey(key); // Not used in this mock upload flow yet
-
-            // 2. Upload Encrypted Blob to Backend
-            setStatusMsg("Uploading encrypted blob...");
+            // 2. Upload Raw File to Backend
+            setStatusMsg("Uploading file...");
             const formData = new FormData();
-            formData.append("document", encryptedBlob, file.name + ".enc");
+            formData.append("document", file, file.name);
 
             const uploadRes = await fetch("http://localhost:3001/api/upload", {
                 method: "POST",
