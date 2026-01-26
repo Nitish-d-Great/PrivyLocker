@@ -194,35 +194,14 @@ export default function VerifyPage() {
                                 </div>
                             )}
 
-                            <div className="pt-2 text-xs font-semibold text-purple-300 mb-1">Shared Attributes</div>
-                            {data?.allowedFields?.map((field: string) => (
-                                <div key={field} className="flex justify-between items-center text-sm capitalize">
-                                    <span className="text-slate-500">{field.replace(/_/g, ' ')}</span>
-                                    <span className="font-medium text-white flex items-center gap-1">
-                                        <ShieldCheck className="w-3 h-3 text-purple-400" />
-                                    </span>
-                                </div>
-                            ))}
+
                         </div>
                         <div className="mt-8 pt-4 border-t border-white/5 text-xs text-slate-600">
                             Cryptographically verified on Solana + Inco
                         </div>
 
                         {/* Debug Info */}
-                        <div className="mt-4 p-4 bg-black/20 rounded-lg text-left text-xs font-mono text-slate-500 overflow-hidden">
-                            <p className="font-bold text-slate-400 mb-2">Debug Information:</p>
-                            <p>Connected: <span className={publicKey?.toString() === data.verifier ? "text-green-500" : "text-red-500"}>{publicKey?.toString()}</span></p>
-                            <p>Expected:  <span className="text-slate-300">{data.verifier}</span></p>
-                            <p>Handle:    <span className="text-slate-300">{data.sessionAadhar ? (data.sessionAadhar["0"] || data.sessionAadhar).toString().slice(0, 15) + "..." : "N/A"}</span></p>
-                            <div className="mt-2">
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className="text-purple-400 hover:text-purple-300 underline"
-                                >
-                                    Reload Page
-                                </button>
-                            </div>
-                        </div>
+
                     </div>
                 )}
 

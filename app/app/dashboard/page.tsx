@@ -3,7 +3,7 @@
 import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { BN } from "@coral-xyz/anchor";
 import { useEffect, useState } from "react";
-import { Plus, Loader2, FileText, Share2, Trash2, X } from "lucide-react";
+import { Plus, Loader2, FileText, Share2, Trash2, X, Lock } from "lucide-react";
 import Link from "next/link";
 import { getProgram, getUserProfilePDA, getDocumentPDA, PROGRAM_ID } from "../../utils/anchor";
 import { PublicKey, SystemProgram, TransactionInstruction, Transaction } from "@solana/web3.js";
@@ -213,23 +213,27 @@ export default function Dashboard() {
                         </div>
                         <div
                             className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 text-blue-400 group-hover:scale-110 transition-transform cursor-pointer"
-                            onClick={() => setSelectedImage(`http://localhost:3001/api/fetch/${doc.encryptedBlobUri}`)}
+                            onClick={() => setSelectedImage(`https://gateway.pinata.cloud/ipfs/${doc.encryptedBlobUri}`)}
                         >
                             <FileText className="w-6 h-6" />
                         </div>
 
-                        {/* Image Preview (Demo) */}
-                        <div className="w-full h-32 bg-slate-800 rounded-lg mb-4 overflow-hidden border border-white/5">
+                        {/* Image Preview (IPFS) */}
+                        <div className="w-full h-32 bg-slate-800 rounded-lg mb-4 overflow-hidden border border-white/5 relative group/img">
                             <img
-                                src={`http://localhost:3001/api/fetch/${doc.encryptedBlobUri}`}
-                                alt="Preview"
-                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                onClick={() => setSelectedImage(`http://localhost:3001/api/fetch/${doc.encryptedBlobUri}`)}
+                                src={`https://gateway.pinata.cloud/ipfs/${doc.encryptedBlobUri}`}
+                                alt="Encrypted Content"
+                                className="w-full h-full object-cover opacity-50 blur-sm group-hover/img:opacity-75 transition-all cursor-pointer"
+                                onClick={() => setSelectedImage(`https://gateway.pinata.cloud/ipfs/${doc.encryptedBlobUri}`)}
                                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
                             />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <Lock className="w-8 h-8 text-slate-400 mb-1" />
+                                <span className="text-[10px] text-slate-500 font-mono">ENCRYPTED ON IPFS</span>
+                            </div>
                         </div>
 
-                        <h3 className="text-lg font-semibold mb-1">{doc.description}</h3>
+                        <h3 className="text-lg font-semibold mb-1 truncate" title={doc.fingerprint}>{doc.fingerprint}</h3>
                         <p className="text-xs text-slate-500 mb-4 whitespace-nowrap overflow-hidden text-ellipsis" title={doc.fingerprint}>
                             Hash: {doc.fingerprint}
                         </p>

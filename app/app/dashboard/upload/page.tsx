@@ -8,6 +8,7 @@ import { encryptValue } from "@inco/solana-sdk/encryption";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { SystemProgram } from "@solana/web3.js";
 import { getProgram, getUserProfilePDA, getDocumentPDA } from "@/utils/anchor";
+import { uploadToPinata } from "@/utils/ipfs";
 
 export default function UploadPage() {
     const router = useRouter();
@@ -16,6 +17,7 @@ export default function UploadPage() {
 
     const [file, setFile] = useState<File | null>(null);
     const [aadhar, setAadhar] = useState("");
+    const [docName, setDocName] = useState("");
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [statusMsg, setStatusMsg] = useState("");
@@ -32,27 +34,27 @@ export default function UploadPage() {
         setStatusMsg("Initializing...");
 
         try {
-            // 1. Skip Encryption for Demo (Upload Raw File)
-            setStatusMsg("Preparing file...");
-            // const encryptedAadharHex = await encryptValue(BigInt(aadhar)); // Keep Aadhar encryption if needed, but for file we skip
+            // 1. Generate Key & Encrypt
+            setStatusMsg("Encrypting file and data...");
 
-            // Inco Encryption for Aadhar (Keep this!)
+            // Inco Encryption
             const encryptedAadharHex = await encryptValue(BigInt(aadhar));
             const encryptedAadharBytes = Buffer.from(encryptedAadharHex, 'hex');
 
-            // 2. Upload Raw File to Backend
-            setStatusMsg("Uploading file...");
-            const formData = new FormData();
-            formData.append("document", file, file.name);
+            const key = await generateKey();
+            const { encryptedBlob } = await encryptFile(file, key);
+            // const keyString = await exportKey(key); // Not used in this mock upload flow yet
 
-            const uploadRes = await fetch("http://localhost:3001/api/upload", {
-                method: "POST",
-                body: formData,
-            });
-            const uploadJson = await uploadRes.json();
+            // 2. Upload Encrypted Blob to IPFS (via Pinata)
+            setStatusMsg("Uploading to IPFS (Pinata)...");
 
-            if (!uploadJson.success) throw new Error("Upload failed");
-            const blobUri = uploadJson.uri;
+            // Note: We upload the ENCRYPTED file.
+            // The filename will be "{docName}.enc"
+            const finalDocName = docName || "Document";
+            const cid = await uploadToPinata(encryptedBlob, finalDocName + ".enc");
+
+            if (!cid) throw new Error("IPFS Upload failed");
+            const blobUri = cid; // Store CID as URI
 
             // 3. Register on Solana
             setStatusMsg("Registering on Solana...");
@@ -82,7 +84,7 @@ export default function UploadPage() {
             const count = profileAccount.documentCount.toNumber();
 
             const documentPDA = getDocumentPDA(userProfilePDA, count);
-            const fingerprint = "hash_" + Date.now(); // Mock fingerprint
+            const fingerprint = finalDocName; // Use the user-provided name as fingerprint
 
             await program.methods.uploadDocument(fingerprint, blobUri, encryptedAadharBytes)
                 .accounts({
@@ -130,6 +132,15 @@ export default function UploadPage() {
                         </div>
 
                         <div className="mt-6">
+                            <label className="block text-sm font-medium text-slate-400 mb-2">Document Name</label>
+                            <input
+                                type="text"
+                                value={docName}
+                                onChange={(e) => setDocName(e.target.value)}
+                                placeholder="e.g. My Degree, National ID"
+                                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors mb-4"
+                            />
+
                             <label className="block text-sm font-medium text-slate-400 mb-2">Aadhar Number (Confidential)</label>
                             <input
                                 type="text"
