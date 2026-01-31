@@ -57,7 +57,7 @@ The system uses a "Hybrid Privacy" model:
 
 ### Demo Video
 
-[![Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/hqdefault.jpg)](https://youtu.be/FLXRZfgLE-0?si=Y7Dgm7PavQB7ymTZ))
+* Link : https://youtu.be/FLXRZfgLE-0?si=Y7Dgm7PavQB7ymTZ
 
 ### Live Demo
 
